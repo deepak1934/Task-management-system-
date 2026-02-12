@@ -1,121 +1,106 @@
 const db = require("../config/db");
-const logActivity = require("../utils/logActive");
+const logActivity = require("../utils/logActive"); // make sure filename matches
 
-
-
-// delete Task  // URL: DELETE http://localhost:5000/api/tasks/:id
-// get Tasks  // URL: GET http://localhost:5000/api/tasks
+// CREATE TASK
 async function createTask(req, res) {
-  const { title, description } = req.body;
-  const userId = req.user.userId;
+  try {
+    const { title, description } = req.body;
+    const userId = req.user.userId;
 
-  if (!title) {
-    return res.status(400).json({ message: "Title is required" });
+    if (!title) {
+      return res.status(400).json({ message: "Title is required" });
+    }
+
+    const [result] = await db.query(
+      "INSERT INTO tasks (user_id, title, description) VALUES (?, ?, ?)",
+      [userId, title, description || null]
+    );
+
+    await logActivity(userId, "TASK_CREATED", req);
+
+    res.status(201).json({
+      message: "Task created successfully",
+      taskId: result.insertId,
+    });
+  } catch (error) {
+    console.error("Create Task Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
-
-  const [result] = await db.query(
-    "INSERT INTO tasks (user_id, title, description) VALUES (?, ?, ?)",
-    [userId, title, description]
-  );
-
-  await logActivity(userId, "TASK_CREATED", req);
-
-  res.status(201).json({ message: "Task created successfully", taskId: result.insertId });
 }
 
-/**
- * @swagger
- * 
- * tags:
- *   name: Tasks
- *   description: Task management APIs
- */
 
-
-/**
- * @swagger
- * /api/tasks:
- *   post:
- *     summary: Create a task
- *     tags: [Tasks]
- *     security:
- *       - bearerAuth: []
- */
-
+// GET ALL TASKS
 async function getTasks(req, res) {
-  const userId = req.user.userId;
+  try {
+    const userId = req.user.userId;
 
-  const [tasks] = await db.query("SELECT * FROM tasks WHERE user_id = ?", [userId]);
+    const [tasks] = await db.query(
+      "SELECT * FROM tasks WHERE user_id = ? ORDER BY created_at DESC",
+      [userId]
+    );
 
-
-
-  res.json(tasks);
+    res.json(tasks);
+  } catch (error) {
+    console.error("Get Tasks Error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 }
-/**
- * @swagger
- * /api/tasks:
- *   get:
- *     summary: Get all tasks of logged-in user
- *     tags: [Tasks]
- *     security:
- *       - bearerAuth: []
- */
 
-/**
- * @swagger
- * /api/tasks/{id}:
- *   put:
- *     summary: Update a task
- *     tags: [Tasks]
- *     security:
- *       - bearerAuth: []
- */
 
+// UPDATE TASK
 async function updateTask(req, res) {
-  const { id } = req.params;
-  const { title, description } = req.body;
-  const userId = req.user.userId;
+  try {
+    const { id } = req.params;
+    const { title, description } = req.body;
+    const userId = req.user.userId;
 
-  const [result] = await db.query(
-    "UPDATE tasks SET title = ?, description = ? WHERE id = ? AND user_id = ?",
-    [title, description, id, userId]
-  );
+    if (!title && !description) {
+      return res.status(400).json({
+        message: "At least one field (title/description) is required",
+      });
+    }
 
-  if (result.affectedRows === 0) {
-    return res.status(404).json({ message: "Task not found" });
+    const [result] = await db.query(
+      "UPDATE tasks SET title = ?, description = ? WHERE id = ? AND user_id = ?",
+      [title || null, description || null, id, userId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    await logActivity(userId, "TASK_UPDATED", req);
+
+    res.json({ message: "Task updated successfully" });
+  } catch (error) {
+    console.error("Update Task Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
-
-  await logActivity(userId, "TASK_UPDATED", req);
-
-  res.json({ message: "Task updated successfully" });
 }
 
-/**
- * @swagger
- * /api/tasks/{id}:
- *   delete:
- *     summary: Delete a task
- *     tags: [Tasks]
- *     security:
- *       - bearerAuth: []
- */
 
+// DELETE TASK
 async function deleteTask(req, res) {
-  const { id } = req.params;
-  const userId = req.user.userId;
+  try {
+    const { id } = req.params;
+    const userId = req.user.userId;
 
-  const [result] = await db.query(
-    "DELETE FROM tasks WHERE id = ? AND user_id = ?",
-    [id, userId]
-  );
+    const [result] = await db.query(
+      "DELETE FROM tasks WHERE id = ? AND user_id = ?",
+      [id, userId]
+    );
 
-  if (result.affectedRows === 0) {
-    return res.status(404).json({ message: "Task not found" });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    await logActivity(userId, "TASK_DELETED", req);
+
+    res.json({ message: "Task deleted successfully" });
+  } catch (error) {
+    console.error("Delete Task Error:", error);
+    res.status(500).json({ message: "Server error" });
   }
-
-  await logActivity(userId, "TASK_DELETED", req);
-
-  res.json({ message: "Task deleted successfully" });
 }
 
 module.exports = {
