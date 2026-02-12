@@ -9,7 +9,7 @@ const swaggerSpec = swaggerJsdoc({
       description: "Backend Assignment API documentation",
     },
     servers: [
-      { url: "http://localhost:5000" } // later replace with hosted URL
+      { url: "/" } // later replace with hosted URL
     ],
     components: {
       securitySchemes: {
