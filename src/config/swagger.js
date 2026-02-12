@@ -22,7 +22,6 @@ const swaggerSpec = swaggerJsdoc({
     },
   },
  apis: ["./src/routes/*.js", "./src/controllers/*.js"]
- // reads swagger comments from routes
 });
 
 module.exports = swaggerSpec;

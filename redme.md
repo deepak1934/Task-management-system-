@@ -1,4 +1,4 @@
-# Task Management Backend
+# Task Management Backend assignment
 
 This is a backend Task Management system built using **Node.js, Express.js, and MySQL**.
 
@@ -21,7 +21,7 @@ The database is hosted on **Railway MySQL**, and authentication is implemented u
 ### 1. Clone the Repository
 
 ```bash
-git clone <YOUR_GITHUB_REPO_LINK>
+git clone https://github.com/deepak1934/Task-management-system-.git
 cd project-folder
 
 
@@ -41,7 +41,18 @@ JWT_SECRET=supersecretkey
 npm run dev
 
 # swagger documentation available at 
-http://localhost:5000/api-docs
+https://task-management-system-pq40.onrender.com/api-docs
 
+##otp
+
+-when you create otp that will be show in your render app into the logs section
+
+-from there you get opt then you do intialize and after that you get CRUD Operation
+##CRUD  opertaion show
+-crud operation are perform directly into the sql data base
+-i have proble in that only 
 
 # hosted backend url 
+https://task-management-system-pq40.onrender.com
+
+

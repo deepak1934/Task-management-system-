@@ -79,7 +79,6 @@ async function updateTask(req, res) {
 }
 
 
-// DELETE TASK
 async function deleteTask(req, res) {
   try {
     const { id } = req.params;
