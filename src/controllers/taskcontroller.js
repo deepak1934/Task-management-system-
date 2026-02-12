@@ -1,5 +1,5 @@
 const db = require("../config/db");
-const logActivity = require("../utils/logActive"); // make sure filename matches
+const logActivity = require("../utils/logActive"); 
 
 // CREATE TASK
 async function createTask(req, res) {
