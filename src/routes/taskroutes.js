@@ -29,8 +29,10 @@ const { createTask, getTasks, updateTask, deleteTask } = require("../controllers
  *             properties:
  *               title:
  *                 type: string
+ *                 example: "Task 1"
  *               description:
  *                 type: string
+ *                 example: "Demo description"
  */
 router.post("/", authenticateToken, createTask);
 
@@ -57,8 +59,23 @@ router.get("/", authenticateToken, getTasks);
  *       - in: path
  *         name: id
  *         required: true
+ *         description: Task ID
  *         schema:
  *           type: integer
+ *         example: 1
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: "Updated title"
+ *               description:
+ *                 type: string
+ *                 example: "Updated description"
  */
 router.put("/:id", authenticateToken, updateTask);
 
@@ -74,8 +91,10 @@ router.put("/:id", authenticateToken, updateTask);
  *       - in: path
  *         name: id
  *         required: true
+ *         description: Task ID
  *         schema:
  *           type: integer
+ *         example: 1
  */
 router.delete("/:id", authenticateToken, deleteTask);
 
